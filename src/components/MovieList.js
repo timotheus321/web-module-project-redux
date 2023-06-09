@@ -2,10 +2,13 @@ import React from 'react';
 
 import MovieListItem from './MovieListItem';
 import MovieFooter from './MovieFooter';
-
+import { connect } from 'react-redux'
 const MovieList = (props)=> {
-    const movies = [];
-
+    const { movies, displayFavorites, favorites } = props;
+    let moviesToDisplay = movies;
+    if(displayFavorites) {
+        moviesToDisplay = movies.filter(movie => favorites.some(fav => fav.id === movie.id));
+    }
     return (
         <div className="col">
             <table className="table table-striped table-hover">
@@ -21,7 +24,7 @@ const MovieList = (props)=> {
 
                 <tbody>
                     {
-                        movies.map(movie=><MovieListItem key={movie.id} movie={movie}/>)
+                        moviesToDisplay.map(movie=><MovieListItem key={movie.id} movie={movie}/>)
                     }
                 </tbody>
             </table>
@@ -31,4 +34,11 @@ const MovieList = (props)=> {
     );
 }
 
-export default MovieList;
+const mapStateToProps = state => {
+    return {
+        movies: state.movies.movies,
+        displayFavorites: state.favorites.displayFavorites,
+        favorites: state.favorites.favorites,
+    }
+}
+export default connect(mapStateToProps)(MovieList);
